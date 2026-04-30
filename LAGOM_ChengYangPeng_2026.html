@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LAGOM — Cheng-Yang Peng</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inconsolata:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --white: #f7f4ef;
+    --green: #3d5a3e;
+    --green-light: #c8d9c9;
+    --pink: #e8d5c4;
+    --ink: #1a1a18;
+    --ink-soft: #6b6b65;
+    --ink-faint: #b8b8b0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--white);
+    color: var(--ink);
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    width: 8px; height: 8px;
+    background: var(--green);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s ease, width 0.3s ease, height 0.3s ease, background 0.3s ease;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1px solid var(--green);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.15s ease, width 0.3s ease, height 0.3s ease, opacity 0.3s ease;
+    opacity: 0.5;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    height: 100vh;
+    display: grid;
+    grid-template-rows: 1fr auto;
+    padding: 10vh 8vw 8vh;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 70% 40%, var(--green-light) 0%, transparent 55%),
+                radial-gradient(ellipse at 20% 80%, var(--pink) 0%, transparent 45%);
+    opacity: 0.4;
+    z-index: 0;
+  }
+
+  .hero-content {
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+
+  .hero-label {
+    font-family: 'Inconsolata', monospace;
+    font-size: clamp(10px, 1.2vw, 13px);
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    margin-bottom: 3vh;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.3s forwards;
+  }
+
+  .hero-title {
+    font-size: clamp(72px, 14vw, 180px);
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    line-height: 0.9;
+    color: var(--ink);
+    opacity: 0;
+    animation: fadeUp 1.2s ease 0.5s forwards;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--green);
+  }
+
+  .hero-sub {
+    margin-top: 4vh;
+    font-size: clamp(16px, 2vw, 22px);
+    font-weight: 300;
+    font-style: italic;
+    color: var(--ink-soft);
+    max-width: 480px;
+    line-height: 1.5;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.8s forwards;
+  }
+
+  .hero-bottom {
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .hero-meta {
+    font-family: 'Inconsolata', monospace;
+    font-size: clamp(10px, 1.1vw, 12px);
+    color: var(--ink-faint);
+    letter-spacing: 0.15em;
+    line-height: 2;
+    opacity: 0;
+    animation: fadeUp 1s ease 1s forwards;
+  }
+
+  .scroll-hint {
+    font-family: 'Inconsolata', monospace;
+    font-size: 11px;
+    color: var(--ink-faint);
+    letter-spacing: 0.2em;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    opacity: 0;
+    animation: fadeUp 1s ease 1.2s forwards;
+  }
+
+  .scroll-line {
+    width: 40px;
+    height: 1px;
+    background: var(--ink-faint);
+    animation: extendLine 2s ease 1.5s infinite;
+  }
+
+  /* ── SECTIONS ── */
+  section {
+    padding: clamp(80px, 12vh, 140px) 8vw;
+  }
+
+  .section-number {
+    font-family: 'Inconsolata', monospace;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    color: var(--ink-faint);
+    margin-bottom: 3vh;
+    display: block;
+  }
+
+  /* ── ABOUT ── */
+  .about {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8vw;
+    align-items: start;
+  }
+
+  .about-left {
+    position: sticky;
+    top: 20vh;
+  }
+
+  .about-heading {
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 300;
+    line-height: 1.1;
+    color: var(--ink);
+    margin-bottom: 4vh;
+  }
+
+  .about-heading em {
+    font-style: italic;
+    color: var(--green);
+  }
+
+  .lagom-def {
+    display: inline-block;
+    border: 1px solid var(--green-light);
+    padding: 16px 24px;
+    margin-top: 3vh;
+    background: rgba(200, 217, 201, 0.15);
+  }
+
+  .lagom-def-word {
+    font-family: 'Inconsolata', monospace;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    color: var(--green);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .lagom-def-text {
+    font-size: 18px;
+    font-style: italic;
+    color: var(--ink-soft);
+    line-height: 1.4;
+  }
+
+  .about-right p {
+    font-size: clamp(18px, 2vw, 22px);
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--ink);
+    margin-bottom: 2.5vh;
+  }
+
+  .about-right p.pullquote {
+    font-size: clamp(22px, 2.5vw, 30px);
+    font-style: italic;
+    color: var(--green);
+    border-left: 2px solid var(--green-light);
+    padding-left: 24px;
+    margin: 4vh 0;
+  }
+
+  /* ── PHOTOS ── */
+  .photos-section {
+    background: var(--ink);
+    padding: clamp(80px, 12vh, 140px) 8vw;
+  }
+
+  .photos-label {
+    font-family: 'Inconsolata', monospace;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    color: var(--ink-faint);
+    margin-bottom: 5vh;
+    display: block;
+  }
+
+  .photos-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 12px;
+  }
+
+  .photo-item {
+    overflow: hidden;
+    position: relative;
+    background: #2a2a28;
+  }
+
+  .photo-item:first-child {
+    grid-row: span 2;
+  }
+
+  .photo-placeholder {
+    width: 100%;
+    aspect-ratio: 3/4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #2a2a28 0%, #1a1a18 100%);
+    border: 1px dashed #3a3a38;
+    gap: 16px;
+    transition: all 0.4s ease;
+    cursor: pointer;
+  }
+
+  .photo-item:first-child .photo-placeholder {
+    aspect-ratio: 2/3;
+  }
+
+  .photo-item:nth-child(4) .photo-placeholder,
+  .photo-item:nth-child(5) .photo-placeholder {
+    aspect-ratio: 4/3;
+  }
+
+  .photo-placeholder:hover {
+    border-color: var(--green);
+    background: linear-gradient(135deg, #2d332d 0%, #1a1a18 100%);
+  }
+
+  .photo-icon {
+    width: 32px; height: 32px;
+    border: 1px solid #4a4a48;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .photo-icon svg { opacity: 0.4; }
+
+  .photo-caption {
+    font-family: 'Inconsolata', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: #4a4a48;
+    text-align: center;
+    line-height: 1.6;
+    padding: 0 20px;
+  }
+
+  .photo-credit {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 16px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.6));
+    font-family: 'Inconsolata', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: rgba(255,255,255,0.4);
+    text-align: right;
+  }
+
+  .photos-credit-line {
+    margin-top: 20px;
+    font-family: 'Inconsolata', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: #4a4a48;
+    text-align: right;
+  }
+
+  /* ── VIDEO ── */
+  .video-section {
+    padding: clamp(80px, 12vh, 140px) 8vw;
+  }
+
+  .video-intro {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8vw;
+    margin-bottom: 6vh;
+    align-items: end;
+  }
+
+  .video-heading {
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 300;
+    line-height: 1.15;
+    color: var(--ink);
+  }
+
+  .video-heading em {
+    font-style: italic;
+    color: var(--green);
+  }
+
+  .video-desc {
+    font-size: clamp(16px, 1.6vw, 20px);
+    font-weight: 300;
+    font-style: italic;
+    color: var(--ink-soft);
+    line-height: 1.6;
+  }
+
+  .video-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: var(--ink);
+    overflow: hidden;
+  }
+
+  .video-wrapper iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  /* ── STRUCTURE ── */
+  .structure-section {
+    background: var(--green);
+    padding: clamp(80px, 12vh, 140px) 8vw;
+    color: var(--white);
+  }
+
+  .structure-heading {
+    font-size: clamp(28px, 3.5vw, 46px);
+    font-weight: 300;
+    color: var(--white);
+    margin-bottom: 8vh;
+    opacity: 0.9;
+  }
+
+  .structure-heading em {
+    font-style: italic;
+    opacity: 0.6;
+  }
+
+  .structure-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+
+  .structure-item {
+    padding: 28px 0;
+    border-top: 1px solid rgba(247, 244, 239, 0.15);
+    display: grid;
+    grid-template-columns: 80px 1fr auto;
+    gap: 24px;
+    align-items: center;
+    transition: background 0.3s ease;
+  }
+
+  .structure-item:hover {
+    background: rgba(247, 244, 239, 0.05);
+    padding-left: 16px;
+    padding-right: 16px;
+    margin-left: -16px;
+    margin-right: -16px;
+  }
+
+  .structure-time {
+    font-family: 'Inconsolata', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    color: rgba(247, 244, 239, 0.4);
+  }
+
+  .structure-name {
+    font-size: clamp(16px, 1.8vw, 22px);
+    font-weight: 300;
+    color: var(--white);
+  }
+
+  .structure-dur {
+    font-family: 'Inconsolata', monospace;
+    font-size: 11px;
+    color: rgba(247, 244, 239, 0.35);
+    letter-spacing: 0.1em;
+    text-align: right;
+  }
+
+  /* ── STATEMENT ── */
+  .statement-section {
+    padding: clamp(80px, 15vh, 180px) 8vw;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 8vw;
+    align-items: start;
+  }
+
+  .statement-tag {
+    position: sticky;
+    top: 20vh;
+  }
+
+  .statement-tag-text {
+    font-family: 'Inconsolata', monospace;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+  }
+
+  .statement-body p {
+    font-size: clamp(20px, 2.4vw, 30px);
+    font-weight: 300;
+    line-height: 1.6;
+    color: var(--ink);
+    margin-bottom: 4vh;
+  }
+
+  .statement-body p.large {
+    font-size: clamp(26px, 3.2vw, 42px);
+    font-style: italic;
+    color: var(--green);
+    line-height: 1.3;
+  }
+
+  /* ── CREDITS ── */
+  .credits-section {
+    background: var(--pink);
+    padding: clamp(80px, 12vh, 140px) 8vw;
+  }
+
+  .credits-heading {
+    font-size: clamp(28px, 3.5vw, 46px);
+    font-weight: 300;
+    color: var(--ink);
+    margin-bottom: 6vh;
+  }
+
+  .credits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 40px 8vw;
+  }
+
+  .credit-group-label {
+    font-family: 'Inconsolata', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .credit-group-value {
+    font-size: clamp(16px, 1.8vw, 21px);
+    font-weight: 300;
+    color: var(--ink);
+    line-height: 1.5;
+  }
+
+  .credits-support {
+    margin-top: 6vh;
+    padding-top: 4vh;
+    border-top: 1px solid rgba(61, 90, 62, 0.15);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    font-family: 'Inconsolata', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--ink-soft);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 6vh 8vw;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--ink-faint);
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .footer-name {
+    font-size: clamp(14px, 1.5vw, 18px);
+    font-weight: 300;
+    color: var(--ink);
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 32px;
+    font-family: 'Inconsolata', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--ink-soft);
+  }
+
+  .footer-links a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .footer-links a:hover { color: var(--green); }
+
+  /* ── DIVIDERS ── */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--ink-faint), transparent);
+    margin: 0 8vw;
+  }
+
+  /* ── REVEAL ANIMATIONS ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── KEYFRAMES ── */
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(20px); }
+  }
+
+  @keyframes extendLine {
+    0%, 100% { width: 40px; opacity: 0.3; }
+    50% { width: 60px; opacity: 0.6; }
+  }
+
+  /* ── MOBILE ── */
+  @media (max-width: 768px) {
+    .about { grid-template-columns: 1fr; }
+    .about-left { position: static; }
+    .video-intro { grid-template-columns: 1fr; }
+    .structure-list { grid-template-columns: 1fr; }
+    .structure-item { grid-template-columns: 60px 1fr auto; }
+    .statement-section { grid-template-columns: 1fr; }
+    .statement-tag { display: none; }
+    .photos-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+    .photo-item:first-child { grid-column: span 2; grid-row: span 1; }
+    .photo-item:first-child .photo-placeholder { aspect-ratio: 16/9; }
+    footer { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <p class="hero-label">Cheng-Yang Peng &nbsp;/&nbsp; 2026</p>
+    <h1 class="hero-title">LA<em>G</em>OM</h1>
+    <p class="hero-sub">not too much · not too little · just right</p>
+  </div>
+  <div class="hero-bottom">
+    <div class="hero-meta">
+      A CONTEMPORARY DUET<br>
+      25 MINUTES · 2 PERFORMERS<br>
+      MASCHINENHAUS ESSEN
+    </div>
+    <div class="scroll-hint">
+      <div class="scroll-line"></div>
+      SCROLL
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section style="padding: clamp(80px, 12vh, 140px) 8vw;">
+  <div class="about">
+    <div class="about-left reveal">
+      <span class="section-number">01 — THE PIECE</span>
+      <h2 class="about-heading">What is<br><em>true happiness?</em></h2>
+      <div class="lagom-def">
+        <span class="lagom-def-word">lagom /ˈlɑːɡɔm/</span>
+        <span class="lagom-def-text">Swedish — not too much,<br>not too little, just right</span>
+      </div>
+    </div>
+    <div class="about-right reveal">
+      <p>In today's society, we are accustomed to constantly striving for more. But two dancers begin in stillness — settled, present, just right.</p>
+      <p class="pullquote">Then the morning starts.<br>They lose it.</p>
+      <p>They prepare, they perform, they push too hard, they break. LAGOM follows Pipo and Didi through the loss of that stillness — and the long way back to it.</p>
+      <p>Absurd, tender, and precise. An invitation to return to the present moment.</p>
+      <p style="font-family: 'Inconsolata', monospace; font-size: 12px; letter-spacing: 0.15em; color: var(--ink-faint); margin-top: 4vh;">LAGOM is the first chapter of an ongoing series exploring the question of true happiness.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PHOTOS -->
+<section class="photos-section">
+  <span class="photos-label">02 — PRODUCTION PHOTOS &nbsp;· &nbsp;Replace with your images</span>
+  <div class="photos-grid">
+
+    <div class="photo-item reveal">
+      <div class="photo-placeholder">
+        <div class="photo-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1">
+            <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+          </svg>
+        </div>
+        <p class="photo-caption">MAIN IMAGE<br>portrait format</p>
+      </div>
+      <div class="photo-credit">Photo: Ke-Chieh Liu / Ralf Silberkuhl / André Symann</div>
+    </div>
+
+    <div class="photo-item reveal">
+      <div class="photo-placeholder">
+        <div class="photo-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1">
+            <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+          </svg>
+        </div>
+        <p class="photo-caption">IMAGE 2</p>
+      </div>
+    </div>
+
+    <div class="photo-item reveal">
+      <div class="photo-placeholder">
+        <div class="photo-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1">
+            <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+          </svg>
+        </div>
+        <p class="photo-caption">IMAGE 3</p>
+      </div>
+    </div>
+
+    <div class="photo-item reveal">
+      <div class="photo-placeholder">
+        <div class="photo-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1">
+            <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+          </svg>
+        </div>
+        <p class="photo-caption">IMAGE 4</p>
+      </div>
+    </div>
+
+    <div class="photo-item reveal">
+      <div class="photo-placeholder">
+        <div class="photo-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1">
+            <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+          </svg>
+        </div>
+        <p class="photo-caption">IMAGE 5</p>
+      </div>
+    </div>
+
+  </div>
+  <p class="photos-credit-line">Photography — Ke-Chieh Liu · Ralf Silberkuhl · André Symann</p>
+  <p style="margin-top: 12px; font-family: 'Inconsolata', monospace; font-size: 10px; letter-spacing: 0.2em; color: #3a3a38; text-align: right;">
+    <a href="https://drive.google.com/drive/folders/1hP_lGyajWw-ZJMI39WlCrTfBOgug-maQ?usp=drive_link" target="_blank" style="color: #5a8a5b; text-decoration: none;">→ DOWNLOAD FULL PRESS PHOTO SET</a>
+  </p>
+</section>
+
+<!-- VIDEO -->
+<section class="video-section">
+  <div class="video-intro reveal">
+    <h2 class="video-heading">Watch the<br><em>premiere</em></h2>
+    <p class="video-desc">Recorded live at Maschinenhaus Essen as part of Somebody@Maschinenhaus 2026. April 2026.</p>
+  </div>
+  <div class="video-wrapper reveal">
+    <iframe src="https://www.youtube.com/embed/UaiRmW316Fw" title="LAGOM — Cheng-Yang Peng" allowfullscreen></iframe>
+  </div>
+  <p style="margin-top: 16px; font-family: 'Inconsolata', monospace; font-size: 10px; letter-spacing: 0.2em; color: var(--ink-faint); text-align: right;">Music — Marco Girardin</p>
+</section>
+
+<div class="divider"></div>
+
+<!-- STRUCTURE -->
+<section class="structure-section">
+  <span class="section-number" style="color: rgba(247,244,239,0.3);">04 — THE ARC</span>
+  <h2 class="structure-heading">From stillness,<br><em>through the noise,</em><br>back to stillness.</h2>
+  <ul class="structure-list">
+    <li class="structure-item reveal">
+      <span class="structure-time">00:00</span>
+      <span class="structure-name">Opening — Lagom State</span>
+      <span class="structure-dur">3:03</span>
+    </li>
+    <li class="structure-item reveal">
+      <span class="structure-time">03:03</span>
+      <span class="structure-name">Scene Building</span>
+      <span class="structure-dur">0:56</span>
+    </li>
+    <li class="structure-item reveal">
+      <span class="structure-time">03:59</span>
+      <span class="structure-name">Morning Routine</span>
+      <span class="structure-dur">1:46</span>
+    </li>
+    <li class="structure-item reveal">
+      <span class="structure-time">05:45</span>
+      <span class="structure-name">First Approach</span>
+      <span class="structure-dur">3:12</span>
+    </li>
+    <li class="structure-item reveal">
+      <span class="structure-time">08:57</span>
+      <span class="structure-name">I Don't Feel Comfortable</span>
+      <span class="structure-dur">0:38</span>
+    </li>
+    <li class="structure-item reveal">
+      <span class="structure-time">09:35</span>
+      <span class="structure-name">The Show Must Go On</span>
+      <span class="structure-dur">3:21</span>
+    </li>
+    <li class="structure-item reveal">
+      <span class="structure-time">12:56</span>
+      <span class="structure-name">Didi Solo</span>
+      <span class="structure-dur">1:59</span>
+    </li>
+    <li class="structure-item reveal">
+      <span class="structure-time">15:37</span>
+      <span class="structure-name">Pipo's Section</span>
+      <span class="structure-dur">2:07</span>
+    </li>
+    <li class="structure-item reveal">
+      <span class="structure-time">17:44</span>
+      <span class="structure-name">Meditation / Rebuild</span>
+      <span class="structure-dur">4:16</span>
+    </li>
+    <li class="structure-item reveal">
+      <span class="structure-time">22:00</span>
+      <span class="structure-name">Return</span>
+      <span class="structure-dur">2:30</span>
+    </li>
+  </ul>
+</section>
+
+<!-- STATEMENT -->
+<section class="statement-section">
+  <div class="statement-tag reveal">
+    <span class="statement-tag-text">05 — ARTISTIC VISION</span>
+  </div>
+  <div class="statement-body">
+    <p class="large reveal">I make work because of what happens in the room when a piece lands.</p>
+    <p class="reveal">The moment of connection, of recognition, of someone smiling as they leave. That is why I do this.</p>
+    <p class="reveal">I want to bring people together and remind them of something they already know. My work asks one question: What is true happiness? Not the performed kind, but the real kind.</p>
+    <p class="reveal">At sixteen I encountered Zen philosophy. It took ten years for that encounter to become clear. Since then my work draws from everything life offers, searching for the concepts that name what we already know but have forgotten.</p>
+    <p class="reveal" style="font-family: 'Inconsolata', monospace; font-size: 14px; letter-spacing: 0.15em; color: var(--ink-soft); margin-top: 6vh;">— Cheng-Yang Peng</p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CREDITS -->
+<section class="credits-section">
+  <span class="section-number">06 — CREDITS</span>
+  <h2 class="credits-heading reveal">The people<br>who made it.</h2>
+  <div class="credits-grid">
+    <div class="reveal">
+      <span class="credit-group-label">Artistic Direction & Choreography</span>
+      <span class="credit-group-value">Cheng-Yang Peng</span>
+    </div>
+    <div class="reveal">
+      <span class="credit-group-label">Dancers</span>
+      <span class="credit-group-value">Feng-Ti Yang<br>Pier Paolo Lara</span>
+    </div>
+    <div class="reveal">
+      <span class="credit-group-label">Music</span>
+      <span class="credit-group-value">Marco Girardin</span>
+    </div>
+    <div class="reveal">
+      <span class="credit-group-label">Visual Design</span>
+      <span class="credit-group-value">Xzavier Tang</span>
+    </div>
+    <div class="reveal">
+      <span class="credit-group-label">Lighting Realisation</span>
+      <span class="credit-group-value">Simon Krämer</span>
+    </div>
+    <div class="reveal">
+      <span class="credit-group-label">Photography</span>
+      <span class="credit-group-value">Ke-Chieh Liu<br>Ralf Silberkuhl<br>André Symann</span>
+    </div>
+  </div>
+  <div class="credits-support reveal">
+    <span>Presented as part of Somebody@Maschinenhaus 2026</span>
+    <span>Funded by Kulturamt Essen</span>
+    <span>Supported by IG Tanz</span>
+    <span>Special thanks — B:STUDIO Essen</span>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-name">Cheng-Yang Peng &nbsp;·&nbsp; Freelance Choreographer & Dancer</div>
+  <div class="footer-links">
+    <a href="https://chengyangpeng.com" target="_blank">WEBSITE</a>
+    <a href="mailto:chengyang.peng@icloud.com">EMAIL</a>
+    <a href="https://www.instagram.com/chengyang_peng" target="_blank">INSTAGRAM</a>
+  </div>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px';
+    cursor.style.top = my + 'px';
+  });
+
+  function animateRing() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.width = '16px';
+      cursor.style.height = '16px';
+      cursor.style.background = 'var(--green)';
+      ring.style.width = '56px';
+      ring.style.height = '56px';
+      ring.style.opacity = '0.3';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.style.width = '8px';
+      cursor.style.height = '8px';
+      ring.style.width = '36px';
+      ring.style.height = '36px';
+      ring.style.opacity = '0.5';
+    });
+  });
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
